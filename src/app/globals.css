@@ -1,0 +1,270 @@
+@import "tailwindcss";
+
+/* ───────────────────────── Tokens ─────────────────────────
+   Papel washi como base, tinta sumi para el texto, bermellon (shu)
+   como color de marca y verde musgo de su jardin vertical como
+   acento secundario. Las secciones oscuras llevan siempre patron:
+   nunca un negro plano. */
+@theme {
+  --color-washi: #f3ede2;
+  --color-paper: #e9e0cf;
+  --color-kinu: #faf6ee;
+  --color-line: #d8ccb6;
+  --color-sumi: #1b1815;
+  --color-ink: #2c2723;
+  --color-ash: #3d3631;
+  --color-mist: #7b7166;
+  --color-shu: #c2381e;
+  --color-shu-dark: #a32d16;
+  --color-lantern: #e3a656;
+  --color-matcha: #5d6b3f;
+
+  --font-display: var(--font-shippori), "Shippori Mincho B1", "Yu Mincho", serif;
+  --font-sans: var(--font-zen), "Zen Kaku Gothic New", ui-sans-serif, system-ui, sans-serif;
+  --font-kanji: "Shippori Mincho B1", "Yu Mincho", "Hiragino Mincho ProN", serif;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html,
+  body {
+    /* clip, no hidden: corta cualquier desborde lateral sin crear un
+       contenedor de scroll que rompa sticky ni ScrollTrigger. */
+    overflow-x: clip;
+  }
+
+  html {
+    background: var(--color-washi);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--color-washi);
+    color: var(--color-sumi);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--color-shu);
+    color: var(--color-kinu);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-shu);
+    outline-offset: 3px;
+  }
+
+  img {
+    user-select: none;
+  }
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+@layer utilities {
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .vertical {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+  }
+
+  /* Etiqueta pequeña. Sans con poco tracking: nada de mono de terminal. */
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .font-kanji {
+    font-family: var(--font-kanji);
+  }
+
+  /* Ventana en arco (como las de un templo) */
+  .shape-arch {
+    border-radius: 999px 999px 1.75rem 1.75rem;
+  }
+
+  .grade {
+    filter: contrast(1.04) saturate(0.95);
+  }
+
+  .leader {
+    flex: 1;
+    min-width: 1.25rem;
+    border-bottom: 1px dotted currentColor;
+    opacity: 0.3;
+    transform: translateY(-0.3em);
+  }
+
+}
+
+/* Botones en la capa components: asi `hidden`, `lg:inline-flex` y
+   compañia (utilities) pueden sobrescribirlos. */
+@layer components {
+  /* Boton pildora */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    border-radius: 999px;
+    padding: 0.95rem 1.6rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    transition:
+      background-color 0.3s var(--ease-out-soft),
+      color 0.3s var(--ease-out-soft),
+      border-color 0.3s var(--ease-out-soft),
+      transform 0.3s var(--ease-out-soft);
+  }
+  .btn:hover {
+    transform: translateY(-1px);
+  }
+  .btn-shu {
+    background: var(--color-shu);
+    color: var(--color-kinu);
+  }
+  .btn-shu:hover {
+    background: var(--color-shu-dark);
+  }
+  .btn-ghost {
+    border: 1px solid currentColor;
+  }
+  .btn-ghost:hover {
+    background: var(--color-sumi);
+    border-color: var(--color-sumi);
+    color: var(--color-kinu);
+  }
+  .btn-light {
+    background: var(--color-kinu);
+    color: var(--color-sumi);
+  }
+  .btn-light:hover {
+    background: var(--color-lantern);
+  }
+}
+
+/* Fibra de papel: ruido oscuro muy suave sobre el washi. */
+.grain {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  opacity: 0.07;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n' x='0' y='0' width='1' height='1'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.3  0 0 0 0 0.25  0 0 0 0 0.2  0 0 0 0.8 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* Estados iniciales de animacion. Solo con JS: sin el, todo visible. */
+.js-motion .anim-rise {
+  opacity: 0;
+  transform: translateY(24px);
+}
+.js-motion .anim-mask .mask-line {
+  transform: translateY(110%);
+}
+.js-motion .anim-pop {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+/* Noren: solo en la primera visita de la sesion. */
+.noren {
+  display: none;
+}
+.js-motion:not(.noren-seen) .noren {
+  display: flex;
+}
+
+/* Farolillo: balanceo suave colgado de su cuerda. */
+@keyframes sway {
+  0%,
+  100% {
+    transform: rotate(-2.5deg);
+  }
+  50% {
+    transform: rotate(2.5deg);
+  }
+}
+.sway {
+  transform-origin: 50% 0;
+  animation: sway 5s ease-in-out infinite;
+}
+
+/* Sombra de bambu meciendose con la brisa */
+@keyframes leaf-sway {
+  0%,
+  100% {
+    transform: rotate(0deg) translate(0, 0);
+  }
+  50% {
+    transform: rotate(1.6deg) translate(10px, 6px);
+  }
+}
+.leaf-sway {
+  transform-origin: 0 0;
+  animation: leaf-sway 9s ease-in-out infinite;
+}
+
+/* Brillo del farol: el unico parpadeo, solo en el estado "aberto". */
+@keyframes glow {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+.lantern-glow {
+  animation: glow 3.6s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(93 107 63 / 0.45);
+  }
+  60% {
+    box-shadow: 0 0 0 7px rgb(93 107 63 / 0);
+  }
+}
+.open-dot {
+  animation: pulse-dot 2.4s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sway,
+  .leaf-sway,
+  .lantern-glow,
+  .open-dot {
+    animation: none;
+  }
+  .js-motion .anim-rise,
+  .js-motion .anim-mask .mask-line,
+  .js-motion .anim-pop {
+    opacity: 1;
+    transform: none;
+  }
+}
